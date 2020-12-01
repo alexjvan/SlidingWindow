@@ -1,4 +1,16 @@
-#include<hw3.cpp>
+// #include"hw3.cpp"
+
+class UdpSocket;
+// Alex
+int clientStopWait(UdpSocket &sock, const int max, int message[]);
+void serverReliable(UdpSocket &sock, const int max, int message[]);
+
+int clientStopWait(UdpSocket &sock, const int max, int message[]){
+ return 0;
+}
+void serverReliable(UdpSocket &sock, const int max, int message[]){
+}
+
 /* ***************************************************************************
  * UDPHW3.CPP
  *  This assignment is a demonstration of understanding of two algorithms:
@@ -13,17 +25,12 @@
  *  
  * ***************************************************************************/
 
-// // Alex
-// int clientStopWait(UdpSocket &sock, const int max, int message[]);
-// void serverReliable(UdpSocket &sock, const int max, int message[]);
-
-
 // // Me
-// int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windowSize);
-// void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windowSize);
+int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windowSize);
+void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windowSize);
 
 int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windowSize) {
-
+ return 0;
 }
 
 void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windowSize) {
