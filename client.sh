@@ -1,4 +1,4 @@
-SERVERIP=127.0.0.1
+SERVERIP=css432b-04.uwb.edu
 # CIP=
 EXE=HW3
 SOURCE=kez_udphw3.cpp
@@ -19,7 +19,7 @@ if test -f "$EXE"; then
   echo $NAME
   echo "Starting test1......"
   echo "Starting client......"
-  ./$EXE $SERVERIP > $DEST 2>&1
+  ./$EXE $SERVERIP > $DEST 
   echo "......End client."
   echo "......End test1."
 fi
