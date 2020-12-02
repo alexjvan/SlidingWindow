@@ -1,4 +1,5 @@
-SERVERIP=localhost
+# CSS432VM_04
+# SERVERIP=127.0.0.1
 # CIP=
 EXE=HW3
 SOURCE=kez_udphw3.cpp

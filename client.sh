@@ -1,4 +1,4 @@
-SERVERIP=localhost
+SERVERIP=127.0.0.1
 # CIP=
 EXE=HW3
 SOURCE=kez_udphw3.cpp
@@ -16,9 +16,12 @@ NAME="---------------Sliding Window Assignment---------------"
 # Run with arg(s)
 
 if test -f "$EXE"; then
+  echo $NAME
+  echo "Starting test1......"
   echo "Starting client......"
-  ./$EXE $SERVERIP >> $DEST
+  ./$EXE $SERVERIP > $DEST 2>&1
   echo "......End client."
+  echo "......End test1."
 fi
 
 
