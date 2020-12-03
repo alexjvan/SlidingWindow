@@ -4,10 +4,7 @@
 
 using namespace std;
 
-#define PORT 23460       // my UDP port
-#define MAX 20000        // times of message transfer
-#define MAXWIN 30        // the maximum window size
-#define LOOP 10          // loop in test 4 and 5
+#define TIMEOUT 1500	 // Define a timeout of 1500 usecs
 
 
 int clientStopWait( UdpSocket &sock, const int max, int message[] ) {
@@ -26,13 +23,13 @@ int clientStopWait( UdpSocket &sock, const int max, int message[] ) {
 		// Forever loop - check if any response
 		while(true) {
 			// If any data available...
-			int avail = sock.pollRecFrom();
+			int avail = sock.pollRecvFrom();
 			// If data available...
 			if(avail > 0)
 				// Exit
 				break;
 			// If not, check if its time to timeout
-			if(timer.lap() > TIME_OUT && !timeOut) {
+			if(timer.lap() > TIMEOUT && !timeOut) {
 				// Timeout and exit
 				timeOut = true;
 				break;
@@ -43,7 +40,7 @@ int clientStopWait( UdpSocket &sock, const int max, int message[] ) {
 		if(timeOut) {
 			// Need to redo message
 			i--;
-			retransmission++;
+			retransmissions++;
 			continue;
 		}
 		sock.recvFrom((char*)message, MSGSIZE);
@@ -51,7 +48,7 @@ int clientStopWait( UdpSocket &sock, const int max, int message[] ) {
 		if(message[0] != i) {
 			// Need to redo message
 			i--;
-			retransmission++;
+			retransmissions++;
 			continue;
 		}
 	}
@@ -71,10 +68,22 @@ void serverReliable( UdpSocket &sock, const int max, int message[] ) {
 				// If we are expecting to acknowledge this message...
 				if(message[0] == i) {
 					// Acknowledge!
-					sock.ackTo((char*)i, sizeof(i));
+					sock.ackTo((char*)&i, sizeof(i));
 					break;
 				}
 			}
 		}
 	}
 }
+
+
+void serverEarlyRetrans( UdpSocket &sock, const int max, int message[], 
+			 int windowSize ) {
+				 
+			 }
+			 
+
+int clientSlidingWindow( UdpSocket &sock, const int max, int message[], 
+			  int windowSize ) {
+				  return 1;
+			  }
