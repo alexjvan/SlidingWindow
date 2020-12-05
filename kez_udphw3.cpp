@@ -46,8 +46,57 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
  * and return it to the main function as its return value.
  * */
 int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windowSize) {
-  
-  return 0;
+  cerr << "client sliding window test:"  << endl;
+
+  // Set variables
+  int ackedNums[max] = {0};
+  int ptrL = 0;
+  int ptrH = ptrL + windowSize;    // Exclusive
+  int unackedCount = 0;
+  int maxSent = -1;
+  int retransmittedCounter = 0;
+
+  // traverse messages to send
+  while(ptrL < max) {
+    if(ackedNums[ptrL]) {  // If low-pointer packet is acked, move the window up. 
+      ++ptrL; ++ptrH;
+    }
+    // for each packet in window, if not acked, send again
+    else{
+      int packet = ptrL
+      while((packet < ptrH) && (packet < max)) {
+        if(ackedNums[ptrL]) continue;                 // if acked, move on
+        message[0] = packet;                          // otherwise, set message,
+        sock.sendTo((char *)message, MSGSIZE);        // send it to server,
+        cerr << "message = " << message[0] << endl;   // and print its contents.
+        maxSent = max(maxSent, packet);               // Update the largest sequence # sent so far
+        if(maxSent != packet) ++retransmittedCounter; // Have we sent this before?
+        ++packet; ++unackedCount;
+      }
+
+      // after all packets in window are sent, start a timer for 1500usec
+      sleep(0.0015)
+
+      // check which packets were acked
+      packet = ptrL
+      while((packet < ptrH) && (packet < max)) {      // For each packet sent
+        if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
+          sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
+          // mark packet as acked, if not dupliate, decrement unacked counter
+          (ackedNums[message[0]]++) ? : --unackedCount;
+        }
+        ++packet;
+      } 
+
+      // if all acked, move window the full window block
+      if(!unackedCount) {
+        ptrL = ptrH;
+        ptrH += windowSize;
+      }
+    }
+  }
+
+  return retransmittedCounter;
 }
 
 /* The server receives message[], saves the message's sequence number 
@@ -60,5 +109,28 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
  * the last received message in order.
  * */
 void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windowSize) {
+  // cerr << "server sliding window test:" << endl;
 
+  // int receivedSeqNum[max] = {0};
+  // int lastReceivedSeqNum = -1;
+  // int currentSeqNum = -1;
+
+  // // receive message[] max times
+  // int i = 0;
+  // while (i < max) {
+  //   // Receive the first window
+  //   for(int j = 0; j < windowSize; ++j) {
+  //     // If there is data to read
+  //     if(sock.pollRecvFrom() > 0) {
+  //       sock.recvFrom((char *) message, MSGSIZE );      // udp message receive
+  //       currentSeqNum = message[0];                     // Sequence # received
+  //       if(currentSeqNum == (lastReceivedSeqNum + 1)) { // Check in order
+  //         lastReceivedSeqNum = currentSeqNum;
+  //       }
+  //       cerr << message[0] << endl;                     // print out message
+  //       ++i;
+  //     }
+
+  //   }
+  // }
 }
