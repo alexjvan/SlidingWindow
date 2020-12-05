@@ -1,4 +1,4 @@
-SERVERIP=css432b-04.uwb.edu
+SERVERIP=csslab12.uwb.edu
 # CIP=
 EXE=HW3
 SOURCE=kez_udphw3.cpp
