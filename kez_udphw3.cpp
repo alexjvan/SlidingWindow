@@ -1,9 +1,16 @@
 // #include"hw3.cpp"
+#include "UdpSocket.h"
+#include<algorithm>
 
 class UdpSocket;
 // Alex
 int clientStopWait(UdpSocket &sock, const int max, int message[]);
 void serverReliable(UdpSocket &sock, const int max, int message[]);
+
+int UdpSocketpollRecvFrom( );           // check if this socket has data to receive
+int sendTo( char[], int );     // send a message in char[] whose size is int
+int recvFrom( char[], int );   // receive a message in char[] of int size
+int ackTo( char[], int );      // send an ack message in char[] of int size
 
 int clientStopWait(UdpSocket &sock, const int max, int message[]){
  return 0;
@@ -63,22 +70,25 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
     }
     // for each packet in window, if not acked, send again
     else{
-      int packet = ptrL
+      int packet = ptrL;
       while((packet < ptrH) && (packet < max)) {
-        if(ackedNums[ptrL]) continue;                 // if acked, move on
+        if(ackedNums[ptrL]) {
+          ++packet;
+          continue;                 // if acked, move on
+        }
         message[0] = packet;                          // otherwise, set message,
         sock.sendTo((char *)message, MSGSIZE);        // send it to server,
         cerr << "message = " << message[0] << endl;   // and print its contents.
-        maxSent = max(maxSent, packet);               // Update the largest sequence # sent so far
+        maxSent = std::max(maxSent, packet);               // Update the largest sequence # sent so far
         if(maxSent != packet) ++retransmittedCounter; // Have we sent this before?
         ++packet; ++unackedCount;
       }
 
       // after all packets in window are sent, start a timer for 1500usec
-      sleep(0.0015)
+      sleep(1);
 
       // check which packets were acked
-      packet = ptrL
+      packet = ptrL;
       while((packet < ptrH) && (packet < max)) {      // For each packet sent
         if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
           sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
