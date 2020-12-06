@@ -109,28 +109,29 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
  * the last received message in order.
  * */
 void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windowSize) {
-  // cerr << "server sliding window test:" << endl;
+  cerr << "server sliding window test:" << endl;
 
-  // int receivedSeqNum[max] = {0};
-  // int lastReceivedSeqNum = -1;
-  // int currentSeqNum = -1;
+  // set variables
+  int receivedSeqNum[max] = {0};
+  int expectedSeqNum = 0;
 
-  // // receive message[] max times
-  // int i = 0;
-  // while (i < max) {
-  //   // Receive the first window
-  //   for(int j = 0; j < windowSize; ++j) {
-  //     // If there is data to read
-  //     if(sock.pollRecvFrom() > 0) {
-  //       sock.recvFrom((char *) message, MSGSIZE );      // udp message receive
-  //       currentSeqNum = message[0];                     // Sequence # received
-  //       if(currentSeqNum == (lastReceivedSeqNum + 1)) { // Check in order
-  //         lastReceivedSeqNum = currentSeqNum;
-  //       }
-  //       cerr << message[0] << endl;                     // print out message
-  //       ++i;
-  //     }
+  // For each packet you will receive
+  while(expectedSeqNum < max) {
+    if(sock.pollRecvFrom()) {                       // If there is data to receive,
+      sock.recvFrom((char *) message, MSGSIZE);     // receive the packet,
+      cerr << "message = " << message[0] << endl;   // and print its contents.
 
-  //   }
-  // }
+      // check the sequence num, if larger than expected, repeat ack for last packet
+      if(message[0] > expectedSeqNum) {
+        message[0] = expectedSeqNum - 1;
+        sock.ackTo((char *)message, MSGSIZE);
+      }
+
+      // else, ack the received message and wait for next packet
+      else {
+        sock.ackTo((char *)message, MSGSIZE);
+        ++expectedSeqNum;
+      }
+    }
+  }
 }
