@@ -56,7 +56,7 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
   cerr << "client sliding window test:"  << endl;
 
   // Set variables
-  int ackedNums[max] = {0};
+  int ackedNums[20000] = {0};
   int ptrL = 0;
   int ptrH = ptrL + windowSize;    // Exclusive
   int unackedCount = 0;
@@ -93,7 +93,7 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
         if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
           sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
           // mark packet as acked, if not dupliate, decrement unacked counter
-          (ackedNums[message[0]]++) ? : --unackedCount;
+          if(!ackedNums[message[0]]++) --unackedCount;
         }
         ++packet;
       } 
@@ -122,7 +122,7 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
   cerr << "server sliding window test:" << endl;
 
   // set variables
-  int receivedSeqNum[max] = {0};
+  int receivedSeqNum[20000] = {0};
   int expectedSeqNum = 0;
 
   // For each packet you will receive
