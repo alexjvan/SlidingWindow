@@ -93,13 +93,15 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
       // check which packets were acked
       packet = ptrL;
       while((packet < ptrH) && (packet < max)) {      // For each packet sent
-        if(timer.lap() < 0.0015) continue;
-        if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
-          sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
-          // mark packet as acked, if not dupliate, decrement unacked counter
-          if(!ackedNums[message[0]]++) --unackedCount;
+        if(timer.lap() < 0.0015);
+        else{
+          if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
+            sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
+            // mark packet as acked, if not dupliate, decrement unacked counter
+            if(!ackedNums[message[0]]++) --unackedCount;
+          }
+          ++packet;
         }
-        ++packet;
       } 
 
       // if all acked, move window the full window block
