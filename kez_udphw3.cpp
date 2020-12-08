@@ -70,6 +70,7 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
   while(ptrL < max) {
     if(ackedNums[ptrL]) {  // If low-pointer packet is acked, move the window up. 
       ++ptrL; ++ptrH;
+      continue;
     }
     // for each packet in window, if not acked, send again
     else{
