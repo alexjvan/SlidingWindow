@@ -72,6 +72,7 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
       ++ptrL; ++ptrH;
       continue;
     }
+    
     // for each packet in window, if not acked, send again
     else{
       int packet = ptrL;
@@ -83,7 +84,7 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
         message[0] = packet;                          // otherwise, set message,
         sock.sendTo((char *)message, MSGSIZE);        // send it to server,
         cerr << "message = " << message[0] << endl;   // and print its contents.
-        maxSent = std::max(maxSent, packet);               // Update the largest sequence # sent so far
+        maxSent = std::max(maxSent, packet);          // Update the largest sequence # sent so far
         if(maxSent != packet) ++retransmittedCounter; // Have we sent this before?
         ++packet; ++unackedCount;
       }
