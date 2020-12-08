@@ -12,7 +12,7 @@ if test -f "$EXE"; then
 fi
 
 # Compile
-g++ *.cpp -o $EXE
+g++ UdpSocket.cpp Timer.cpp kez_udphw3.cpp hw3.cpp -o $EXE
 
 # Run with arg(s)
 

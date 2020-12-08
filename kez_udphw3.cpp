@@ -1,5 +1,6 @@
 // #include"hw3.cpp"
 #include "UdpSocket.h"
+#include "Timer.h"
 #include<algorithm>
 
 class UdpSocket;
@@ -64,6 +65,8 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
   int retransmittedCounter = 0;
 
   // traverse messages to send
+  Timer timer = Timer();
+  int timeout = 0;
   while(ptrL < max) {
     if(ackedNums[ptrL]) {  // If low-pointer packet is acked, move the window up. 
       ++ptrL; ++ptrH;
@@ -85,11 +88,12 @@ int clientSlidingWindow(UdpSocket &sock, const int max, int message[], int windo
       }
 
       // after all packets in window are sent, start a timer for 1500usec
-      sleep(1);
+      timer.start();
 
       // check which packets were acked
       packet = ptrL;
       while((packet < ptrH) && (packet < max)) {      // For each packet sent
+        if(timer.lap() < 0.0015) continue;
         if(sock.pollRecvFrom() > 0) {                 // If there is a message in the sock
           sock.recvFrom((char *)message, MSGSIZE);    // receive the message (ACK)
           // mark packet as acked, if not dupliate, decrement unacked counter
@@ -134,7 +138,9 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
       // check the sequence num, if larger than expected, repeat ack for last packet
       if(message[0] > expectedSeqNum) {
         message[0] = expectedSeqNum - 1;
-        sock.ackTo((char *)message, MSGSIZE);
+        // sock.ackTo((char *)message, MSGSIZE);
+        int i = (expectedSeqNum - 1);
+        sock.ackTo((char*)&i, sizeof(i));
       }
 
       // else, ack the received message and wait for next packet
