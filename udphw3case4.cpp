@@ -1,6 +1,7 @@
 #include <iostream>
 #include "UdpSocket.h"
 #include "Timer.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -171,11 +172,16 @@ void serverEarlyRetrans(UdpSocket &sock, const int max, int message[], int windo
   // set variables
   int receivedSeqNum[20000] = {0};
   int expectedSeqNum = 0;
-
+  int i = 0;
+  int random;
+  srand(time(NULL));
   // For each packet you will receive
   while(expectedSeqNum < max) {
+    if(i == 11) i = 0;
     if(sock.pollRecvFrom()) {                       // If there is data to receive,
       sock.recvFrom((char *) message, MSGSIZE);     // receive the packet,
+      random = rand() % 100 + 1;  
+      if(random < i++) continue;
       cerr << "message = " << message[0] << endl;   // and print its contents.
 
       // check the sequence num, if larger than expected, repeat ack for last packet
